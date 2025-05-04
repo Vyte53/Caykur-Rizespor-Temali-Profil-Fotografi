@@ -2,22 +2,17 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"> <!-- Added user-scalable=no for touch -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Çaykur Rizespor Temalı Profil Fotoğrafı</title>
     <style>
-        /* --- Styles remain the same --- */
+        /* --- Profil Fotoğrafı Oluşturucu Stilleri --- */
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Arial', sans-serif; }
         body { background: #f5f5f5; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 2rem; }
-        .container {
-            /* Removed container background/padding/border/shadow for cleaner look */
-            max-width: 600px;
-            width: 100%;
-            text-align: center;
-        }
+        .container { max-width: 600px; width: 100%; text-align: center; }
         .upload-section { border: 2px dashed #ccc; border-radius: 10px; padding: 2rem; cursor: pointer; margin: 1rem 0; transition: all 0.3s ease; }
         .upload-section:hover { border-color: #007bff; background: #f8f9fa; }
         .frame-selection { margin: 1rem 0; display: none; }
-        .frame-selection button { background: #6c757d; color: white; border: none; padding: 10px 15px; border-radius: 20px; cursor: pointer; font-size: 14px; margin: 5px; /* Added vertical margin */ transition: background 0.3s ease; position: relative; }
+        .frame-selection button { background: #6c757d; color: white; border: none; padding: 10px 15px; border-radius: 20px; cursor: pointer; font-size: 14px; margin: 5px; transition: background 0.3s ease; position: relative; }
         .frame-selection button:disabled { opacity: 0.7; cursor: not-allowed; }
         .frame-selection button .loading-indicator { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: spin 1s linear infinite; display: none; }
         @keyframes spin { to { transform: translate(-50%, -50%) rotate(360deg); } }
@@ -25,44 +20,94 @@
         .frame-selection button.loading span { visibility: hidden; }
         .frame-selection button:hover:not(:disabled) { background: #5a6268; }
         .frame-selection button.active { background: #007bff; box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); }
-
-        .preview-container {
-            position: relative;
-            width: 300px; /* Should match 'size' constant in JS */
-            height: 300px; /* Should match 'size' constant in JS */
-            margin: 20px auto;
-            display: none; /* Initially hidden */
-            border-radius: 50%; /* Make container circular */
-            overflow: hidden; /* Crucial: Clips canvases inside */
-            cursor: grab; /* Indicate draggability */
-        }
-        .preview-container.dragging {
-             cursor: grabbing; /* Indicate active drag */
-        }
-
-        #image-canvas {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-        }
-
-        #frame-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none; /* Allow drag events to pass through to image canvas */
-            z-index: 10; /* Ensure frame is on top */
-        }
-
+        .preview-container { position: relative; width: 300px; height: 300px; margin: 20px auto; display: none; border-radius: 50%; overflow: hidden; cursor: grab; }
+        .preview-container.dragging { cursor: grabbing; }
+        #image-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+        #frame-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 10; }
         #download-btn { background: #28a745; color: white; border: none; padding: 12px 24px; border-radius: 25px; cursor: pointer; font-size: 16px; margin-top: 1rem; display: none; transition: background 0.3s ease; }
         #download-btn:hover { background: #218838; }
         footer { margin-top: 2rem; color: #6c757d; font-size: 0.9em; }
         footer a { color: #007bff; text-decoration: none; }
         footer a:hover { text-decoration: underline; }
+
+        /* --- Maç Geri Sayım Stilleri --- */
+        #match-countdown-container {
+            background-color: #fff;
+            border-radius: 10px;
+            padding: 1.5rem 1rem;
+            margin-top: 2.5rem; /* Üstteki içerikle arasını aç */
+            margin-bottom: 1rem; /* Footer ile arasını aç */
+            max-width: 450px; /* Genişliği sınırla */
+            width: 95%; /* Ekran küçülünce biraz boşluk kalsın */
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        #match-countdown-container h2 {
+            font-size: 1.4em;
+            color: #333;
+            margin-bottom: 1rem;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 0.5rem;
+        }
+        .match-details {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 0.8rem;
+            gap: 15px; /* Logolar ve 'vs' arası boşluk */
+        }
+        .team-logo {
+            max-width: 45px; /* Logo boyutunu ayarla */
+            height: auto;
+            vertical-align: middle;
+        }
+        .vs-text {
+            font-weight: bold;
+            font-size: 1.1em;
+            color: #555;
+        }
+        #match-date-time {
+            font-size: 0.95em;
+            color: #666;
+            margin-bottom: 1.2rem;
+        }
+        #countdown-timer {
+            display: flex; /* Zaman birimlerini yan yana getir */
+            justify-content: center;
+            gap: 15px; /* Birimler arası boşluk */
+            flex-wrap: wrap; /* Küçük ekranda alt alta gelebilir */
+        }
+        .time-unit {
+            background-color: #f0f2f5; /* Hafif gri arka plan */
+            padding: 8px 12px;
+            border-radius: 6px;
+            min-width: 60px; /* Minimum genişlik */
+        }
+        .time-unit span {
+            display: block; /* Rakam ve etiket alt alta */
+            text-align: center;
+        }
+        .time-unit span#days,
+        .time-unit span#hours,
+        .time-unit span#minutes,
+        .time-unit span#seconds {
+            font-size: 1.8em; /* Rakamları büyüt */
+            font-weight: bold;
+            color: #303ab6; /* Rizespor Mavi */
+            line-height: 1.1;
+        }
+        .time-unit span.label {
+            font-size: 0.75em;
+            color: #6c757d; /* Etiket rengi */
+            text-transform: uppercase;
+        }
+        #match-passed-message {
+            margin-top: 1rem; /* Sayacın yerine geldiğinde boşluk */
+            font-weight: bold;
+            color: #dc3545;
+            display: none; /* Başlangıçta gizli */
+        }
+
     </style>
 </head>
 <body>
@@ -77,15 +122,14 @@
         <!-- Frame Selection Buttons -->
         <div class="frame-selection" id="frame-selection-div">
             <p>Çerçeve Seç:</p>
-            <button id="frame1-btn"><span>Yeşil-Mavi</span></button>
-            <button id="frame3-btn"><span>Mavi-Yeşil</span></button>
-            <button id="frame2-btn">
-                <span>Rize Rizesporludur</span>
-                <div class="loading-indicator"></div>
-            </button>
-            <!-- NEW 4th Frame Button -->
-            <button id="frame4-btn">
-                <span>Atmacalar</span> <!-- CHANGE TEXT AS NEEDED -->
+            <button id="frame1-btn"><span>Yeşil-Mavi</span></button> <!-- Renk -->
+            <button id="frame3-btn"><span>Mavi-Yeşil</span></button> <!-- Renk -->
+            <button id="frame2-btn"><span>Rize Rizesporludur</span><div class="loading-indicator"></div></button> <!-- Resim -->
+            <button id="frame4-btn"><span>Atmacalar</span><div class="loading-indicator"></div></button> <!-- Resim -->
+            <button id="frame5-btn"><span>Bir Şarkısın Sen</span><div class="loading-indicator"></div></button> <!-- Resim -->
+            <button id="frame6-btn"><span>Biz Rizesporluyuz</span><div class="loading-indicator"></div></button> <!-- Resim -->
+            <button id="frame7-btn">
+                <span>Çaykur Rizespor Logo</span>
                 <div class="loading-indicator"></div>
             </button>
         </div>
@@ -99,12 +143,43 @@
         <button id="download-btn" onclick="downloadImage()">İndir</button>
     </div>
 
+    <!-- <<< MAÇ GERİ SAYIM BAŞLANGIÇ >>> -->
+    <div id="match-countdown-container">
+        <h2>Çaykur Rizespor'umuzun Maçı</h2>
+        <div class="match-details">
+            <img src="" alt="Ev Sahibi Logo" id="home-logo" class="team-logo">
+            <span class="vs-text">vs</span>
+            <img src="" alt="Deplasman Logo" id="away-logo" class="team-logo">
+        </div>
+        <p id="match-date-time"></p>
+        <div id="countdown-timer">
+            <div class="time-unit">
+                <span id="days">00</span>
+                <span class="label">Gün</span>
+            </div>
+            <div class="time-unit">
+                <span id="hours">00</span>
+                <span class="label">Saat</span>
+            </div>
+            <div class="time-unit">
+                <span id="minutes">00</span>
+                <span class="label">Dakika</span>
+            </div>
+            <div class="time-unit">
+                <span id="seconds">00</span>
+                <span class="label">Saniye</span>
+            </div>
+        </div>
+        <p id="match-passed-message"></p> <!-- style="display: none;" JS ile kontrol edilecek -->
+    </div>
+    <!-- <<< MAÇ GERİ SAYIM BİTİŞ >>> -->
+
     <footer>
         © 2025 <a href="https://x.com/atmosphere1119" target="_blank">atmosphere1119</a> tarafından Çaykur Rizespor taraftarları için oluşturuldu.
     </footer>
 
     <script>
-        // --- Element References ---
+        // --- Profil Fotoğrafı Oluşturucu Element Referansları ---
         const imageCanvas = document.getElementById('image-canvas');
         const frameOverlay = document.getElementById('frame-overlay');
         const downloadBtn = document.getElementById('download-btn');
@@ -114,15 +189,24 @@
         const frame1Btn = document.getElementById('frame1-btn');
         const frame2Btn = document.getElementById('frame2-btn');
         const frame3Btn = document.getElementById('frame3-btn');
-        const frame4Btn = document.getElementById('frame4-btn'); // NEW: Reference for 4th button
+        const frame4Btn = document.getElementById('frame4-btn');
+        const frame5Btn = document.getElementById('frame5-btn');
+        const frame6Btn = document.getElementById('frame6-btn');
+        const frame7Btn = document.getElementById('frame7-btn');
 
-        // --- State Variables ---
+        // --- Profil Fotoğrafı Oluşturucu State Değişkenleri ---
         let uploadedImage = new Image();
-        let frameImage = new Image(); // For frame 2 ("Rize Rizesporludur")
+        let frameImage = new Image(); // Frame 2
         let isFrameImageLoaded = false;
-        let frame4Image = new Image(); // NEW: For frame 4
-        let isFrame4ImageLoaded = false; // NEW: Loading status for frame 4
-        let activeFrameType = 'none'; // Can be 'colors', 'image' (for frame 2), 'image4' (for frame 4)
+        let frame4Image = new Image(); // Frame 4
+        let isFrame4ImageLoaded = false;
+        let frame5Image = new Image(); // Frame 5
+        let isFrame5ImageLoaded = false;
+        let frame6Image = new Image(); // Frame 6
+        let isFrame6ImageLoaded = false;
+        let frame7Image = new Image(); // Frame 7
+        let isFrame7ImageLoaded = false;
+        let activeFrameType = 'none';
         let activeColorFrameData = null;
 
         // Panning/dragging variables
@@ -134,123 +218,134 @@
         let imageScale = 1;
         let scaledWidth = 0, scaledHeight = 0;
 
-        // --- Frame Settings ---
+        // --- Profil Fotoğrafı Oluşturucu Ayarları ---
         const size = 300; // Canvas size
         const colorFrameWidth = 15;
-        const frame1_colors = ['#303ab6', '#39a148'];
-        const frame3_colors = ['#39a148', '#303ab6'];
-        const frameImageUrl = 'https://i.ibb.co/1JKwqXgf/rizerizesporludurframe.png'; // URL for frame 2
-        const frame4ImageUrl = 'https://i.ibb.co/DX7J4xn/atmacalarframe.png'; // !!! IMPORTANT: REPLACE THIS URL !!!
+        const frame1_colors = ['#303ab6', '#39a148']; // Yeşil-Mavi
+        const frame3_colors = ['#39a148', '#303ab6']; // Mavi-Yeşil
+        const frameImageUrl = 'https://i.ibb.co/1JKwqXgf/rizerizesporludurframe.png'; // Frame 2 URL
+        const frame4ImageUrl = 'https://i.ibb.co/DX7J4xn/atmacalarframe.png'; // Frame 4 URL
+        const frame5ImageUrl = 'https://i.ibb.co/5htKDcX6/birsarkisinsenrizesporframe.png'; // Frame 5 URL
+        const frame6ImageUrl = 'https://i.ibb.co/pvhJRs1b/bizrizeliyizrizesporframe.png'; // Frame 6 URL
+        const frame7ImageUrl = 'https://i.ibb.co/DfWc3QKd/logorizesporframe.png'; // Frame 7 URL
 
-        // --- Canvas Setup ---
-        imageCanvas.width = size;
-        imageCanvas.height = size;
+        // --- Profil Fotoğrafı Oluşturucu Canvas Kurulumu ---
+        imageCanvas.width = size; imageCanvas.height = size;
         const imageCtx = imageCanvas.getContext('2d');
-
-        frameOverlay.width = size;
-        frameOverlay.height = size;
+        frameOverlay.width = size; frameOverlay.height = size;
         const frameCtx = frameOverlay.getContext('2d');
 
-        // --- Load Frame Images ---
-        function loadFrameImage() { // Loads frame 2 ("Rize Rizesporludur")
+        // --- Profil Fotoğrafı Oluşturucu Çerçeve Yükleme Fonksiyonları ---
+        function loadFrameImageFunc() { // Frame 2 yükleme (isim çakışmaması için değiştirdim)
             frame2Btn.disabled = true; frame2Btn.classList.add('loading');
             frameImage.onload = () => { console.log("Frame 2 image loaded."); isFrameImageLoaded = true; frame2Btn.disabled = false; frame2Btn.classList.remove('loading'); if(activeFrameType === 'image') { drawPreviewFrame('image'); } };
             frameImage.onerror = () => { console.error("Failed to load frame 2 image."); alert("Çerçeve resmi yüklenemedi (Rize Rizesporludur)."); frame2Btn.disabled = true; frame2Btn.classList.remove('loading'); frame2Btn.querySelector('span').textContent = "Resim Hatası"; };
             frameImage.crossOrigin = "Anonymous"; frameImage.src = frameImageUrl;
         }
-
-        // NEW: Function to load Frame 4 image
-        function loadFrame4Image() {
+        function loadFrame4ImageFunc() { // Frame 4 yükleme
             frame4Btn.disabled = true; frame4Btn.classList.add('loading');
-            frame4Image.onload = () => {
-                console.log("Frame 4 image loaded.");
-                isFrame4ImageLoaded = true;
-                frame4Btn.disabled = false; frame4Btn.classList.remove('loading');
-                if(activeFrameType === 'image4') { drawPreviewFrame('image4'); } // Draw if selected while loading
-            };
-            frame4Image.onerror = () => {
-                console.error("Failed to load frame 4 image.");
-                alert("Yeni çerçeve resmi yüklenemedi.");
-                frame4Btn.disabled = true; frame4Btn.classList.remove('loading');
-                frame4Btn.querySelector('span').textContent = "Resim 4 Hatası";
-            };
-            frame4Image.crossOrigin = "Anonymous";
-            frame4Image.src = frame4ImageUrl;
+            frame4Image.onload = () => { console.log("Frame 4 image loaded."); isFrame4ImageLoaded = true; frame4Btn.disabled = false; frame4Btn.classList.remove('loading'); if(activeFrameType === 'image4') { drawPreviewFrame('image4'); } };
+            frame4Image.onerror = () => { console.error("Failed to load frame 4 image."); alert("Çerçeve resmi yüklenemedi (Atmacalar)."); frame4Btn.disabled = true; frame4Btn.classList.remove('loading'); frame4Btn.querySelector('span').textContent = "Resim 4 Hatası"; };
+            frame4Image.crossOrigin = "Anonymous"; frame4Image.src = frame4ImageUrl;
+        }
+        function loadFrame5ImageFunc() { // Frame 5 yükleme
+            frame5Btn.disabled = true; frame5Btn.classList.add('loading');
+            frame5Image.onload = () => { console.log("Frame 5 image loaded."); isFrame5ImageLoaded = true; frame5Btn.disabled = false; frame5Btn.classList.remove('loading'); if(activeFrameType === 'image5') { drawPreviewFrame('image5'); } };
+            frame5Image.onerror = () => { console.error("Failed to load frame 5 image."); alert("Çerçeve resmi yüklenemedi (Bir Şarkısın Sen)."); frame5Btn.disabled = true; frame5Btn.classList.remove('loading'); frame5Btn.querySelector('span').textContent = "Resim 5 Hatası"; };
+            frame5Image.crossOrigin = "Anonymous"; frame5Image.src = frame5ImageUrl;
+        }
+        function loadFrame6ImageFunc() { // Frame 6 yükleme
+            frame6Btn.disabled = true; frame6Btn.classList.add('loading');
+            frame6Image.onload = () => { console.log("Frame 6 image loaded."); isFrame6ImageLoaded = true; frame6Btn.disabled = false; frame6Btn.classList.remove('loading'); if(activeFrameType === 'image6') { drawPreviewFrame('image6'); } };
+            frame6Image.onerror = () => { console.error("Failed to load frame 6 image."); alert("Çerçeve resmi yüklenemedi (Biz Rizesporluyuz)."); frame6Btn.disabled = true; frame6Btn.classList.remove('loading'); frame6Btn.querySelector('span').textContent = "Resim 6 Hatası"; };
+            frame6Image.crossOrigin = "Anonymous"; frame6Image.src = frame6ImageUrl;
+        }
+        function loadFrame7ImageFunc() { // Frame 7 yükleme
+            frame7Btn.disabled = true; frame7Btn.classList.add('loading');
+            frame7Image.onload = () => { console.log("Frame 7 image loaded."); isFrame7ImageLoaded = true; frame7Btn.disabled = false; frame7Btn.classList.remove('loading'); if(activeFrameType === 'image7') { drawPreviewFrame('image7'); } };
+            frame7Image.onerror = () => { console.error("Failed to load frame 7 image."); alert("Çerçeve resmi yüklenemedi (Ç. Rizespor Logo)."); frame7Btn.disabled = true; frame7Btn.classList.remove('loading'); frame7Btn.querySelector('span').textContent = "Resim 7 Hatası"; };
+            frame7Image.crossOrigin = "Anonymous"; frame7Image.src = frame7ImageUrl;
         }
 
-        // Load both image frames on page start
-        loadFrameImage();
-        loadFrame4Image(); // NEW: Call loading function for frame 4
+        // Load all image frames on page start
+        loadFrameImageFunc();
+        loadFrame4ImageFunc();
+        loadFrame5ImageFunc();
+        loadFrame6ImageFunc();
+        loadFrame7ImageFunc();
 
-
-        // --- Draw User Image (with panning/scaling) ---
+        // --- Profil Fotoğrafı Oluşturucu Çizim Fonksiyonları ---
         function drawUserImage() {
-            if (!uploadedImage.src || !uploadedImage.complete) return;
+            if (!uploadedImage.src || !uploadedImage.complete || uploadedImage.naturalWidth === 0) return;
+            // Basit sınır kontrolü
+             offsetX = Math.min(0, Math.max(size - scaledWidth, offsetX));
+             offsetY = Math.min(0, Math.max(size - scaledHeight, offsetY));
+
             imageCtx.clearRect(0, 0, size, size);
             imageCtx.drawImage(uploadedImage, offsetX, offsetY, scaledWidth, scaledHeight);
-            // console.log(`Drawing user image at: x=${offsetX.toFixed(1)}, y=${offsetY.toFixed(1)}, scale=${imageScale.toFixed(2)}`); // Debug
         }
-
-        // --- Draw Frame Overlay ---
-        // UPDATED: Added 'image4' case
         function drawPreviewFrame(type, colors = null) {
-            frameCtx.clearRect(0, 0, size, size); activeColorFrameData = null;
+            frameCtx.clearRect(0, 0, size, size);
+            activeColorFrameData = null;
             if (type === 'colors') {
                 if (!colors || colors.length !== 2) { console.error("Invalid color data."); activeFrameType = 'none'; return; }
-                activeColorFrameData = colors; const colorA = activeColorFrameData[0]; const colorB = activeColorFrameData[1]; const halfWidth = colorFrameWidth / 2;
+                activeColorFrameData = colors;
+                const colorA = activeColorFrameData[0]; const colorB = activeColorFrameData[1]; const halfWidth = colorFrameWidth / 2;
                 frameCtx.beginPath(); frameCtx.arc(size / 2, size / 2, size / 2 - halfWidth, Math.PI / 2, -Math.PI / 2, true); frameCtx.strokeStyle = colorA; frameCtx.lineWidth = colorFrameWidth; frameCtx.stroke();
                 frameCtx.beginPath(); frameCtx.arc(size / 2, size / 2, size / 2 - halfWidth, -Math.PI / 2, Math.PI / 2, true); frameCtx.strokeStyle = colorB; frameCtx.lineWidth = colorFrameWidth; frameCtx.stroke();
-            } else if (type === 'image') { // Frame 2
+            } else if (type === 'image') {
                 if (isFrameImageLoaded) { frameCtx.drawImage(frameImage, 0, 0, size, size); }
-                else { console.log("Preview Frame 2: Image not loaded yet."); }
-            } else if (type === 'image4') { // NEW: Frame 4
+            } else if (type === 'image4') {
                 if (isFrame4ImageLoaded) { frameCtx.drawImage(frame4Image, 0, 0, size, size); }
-                 else { console.log("Preview Frame 4: Image not loaded yet."); }
+            } else if (type === 'image5') {
+                if (isFrame5ImageLoaded) { frameCtx.drawImage(frame5Image, 0, 0, size, size); }
+            } else if (type === 'image6') {
+                if (isFrame6ImageLoaded) { frameCtx.drawImage(frame6Image, 0, 0, size, size); }
+            } else if (type === 'image7') {
+                if (isFrame7ImageLoaded) { frameCtx.drawImage(frame7Image, 0, 0, size, size); }
             }
             activeFrameType = type;
         }
 
-        // --- Button Highlighting ---
-        // UPDATED: Included frame4Btn
+        // --- Profil Fotoğrafı Oluşturucu Yardımcı Fonksiyonlar ---
         function setActiveButton(activeBtn) {
-             frame1Btn.classList.remove('active');
-             frame2Btn.classList.remove('active');
-             frame3Btn.classList.remove('active');
-             frame4Btn.classList.remove('active'); // NEW: Reset frame 4 button
+             frame1Btn.classList.remove('active'); frame2Btn.classList.remove('active');
+             frame3Btn.classList.remove('active'); frame4Btn.classList.remove('active');
+             frame5Btn.classList.remove('active'); frame6Btn.classList.remove('active');
+             frame7Btn.classList.remove('active');
              if (activeBtn) { activeBtn.classList.add('active'); }
         }
-
-        // --- Calculate Initial Image State (Centering/Scaling) ---
         function calculateInitialImageState() {
-            if (!uploadedImage.naturalWidth) return;
-
-            const imgWidth = uploadedImage.naturalWidth;
-            const imgHeight = uploadedImage.naturalHeight;
+            if (!uploadedImage.naturalWidth || uploadedImage.naturalWidth === 0) return;
+            const imgWidth = uploadedImage.naturalWidth; const imgHeight = uploadedImage.naturalHeight;
             imageScale = Math.max(size / imgWidth, size / imgHeight);
-            scaledWidth = imgWidth * imageScale;
-            scaledHeight = imgHeight * imageScale;
-            initialOffsetX = (size - scaledWidth) / 2;
-            initialOffsetY = (size - scaledHeight) / 2;
-            offsetX = initialOffsetX;
-            offsetY = initialOffsetY;
-
-            console.log(`Initial state: scale=${imageScale.toFixed(2)}, w=${scaledWidth.toFixed(1)}, h=${scaledHeight.toFixed(1)}, ox=${offsetX.toFixed(1)}, oy=${offsetY.toFixed(1)}`);
-            drawUserImage(); // Draw initial centered image
+            scaledWidth = imgWidth * imageScale; scaledHeight = imgHeight * imageScale;
+            initialOffsetX = (size - scaledWidth) / 2; initialOffsetY = (size - scaledHeight) / 2;
+            offsetX = initialOffsetX; offsetY = initialOffsetY;
+            drawUserImage();
         }
 
-        // --- Event Listeners ---
-
-        // File Upload
+        // --- Profil Fotoğrafı Oluşturucu Olay Dinleyicileri ---
         fileInput.addEventListener('change', function(e) {
             const file = e.target.files[0];
             if (file && file.type.startsWith('image/')) {
                 const reader = new FileReader();
                 reader.onload = function(event) {
+                     // Yeni resim için state'i sıfırla (offsetX,Y, scale vb.)
+                     offsetX = 0; offsetY = 0; imageScale = 1; scaledWidth=0; scaledHeight=0;
+
+                     uploadedImage = new Image(); // Önemli: Her yüklemede yeni nesne oluştur
                      uploadedImage.onload = () => {
-                         calculateInitialImageState();
+                         if (uploadedImage.naturalWidth === 0) { // Geçersiz resim kontrolü
+                            alert("Geçersiz resim dosyası.");
+                            resetUI(); // UI'ı tamamen sıfırla
+                            return;
+                         }
+                         calculateInitialImageState(); // Boyutları hesapla ve çiz
                          previewDiv.style.display = 'block';
                          frameSelectionDiv.style.display = 'block';
                          downloadBtn.style.display = 'inline-block';
+                         // Yeni resim yüklendiğinde çerçeve seçimini kaldır
                          frameCtx.clearRect(0, 0, size, size);
                          activeFrameType = 'none';
                          activeColorFrameData = null;
@@ -260,127 +355,159 @@
                      uploadedImage.src = event.target.result;
                 };
                 reader.readAsDataURL(file);
-            } else if (file) {
-                 alert("Lütfen geçerli bir resim dosyası seçin."); resetUI();
-            } else {
-                 resetUI();
-            }
+            } else if (file) { alert("Lütfen geçerli bir resim dosyası seçin."); resetUI(); }
         });
 
-        // Frame Button Clicks
-        frame1Btn.addEventListener('click', () => { if (!uploadedImage.src || uploadedImage.src.endsWith('#')) return; drawPreviewFrame('colors', frame1_colors); setActiveButton(frame1Btn); });
-        frame3Btn.addEventListener('click', () => { if (!uploadedImage.src || uploadedImage.src.endsWith('#')) return; drawPreviewFrame('colors', frame3_colors); setActiveButton(frame3Btn); });
-        frame2Btn.addEventListener('click', () => { // Frame 2 ("Rize Rizesporludur")
-            if (!uploadedImage.src || uploadedImage.src.endsWith('#')) return;
-            if (!isFrameImageLoaded) { alert("Çerçeve resmi hala yükleniyor."); return; }
-            drawPreviewFrame('image');
-            setActiveButton(frame2Btn);
-        });
-        // NEW: Frame 4 Button Click
-        frame4Btn.addEventListener('click', () => {
-            if (!uploadedImage.src || uploadedImage.src.endsWith('#')) return;
-            if (!isFrame4ImageLoaded) { alert("Yeni çerçeve resmi hala yükleniyor."); return; }
-            drawPreviewFrame('image4');
-            setActiveButton(frame4Btn);
-        });
+        frame1Btn.addEventListener('click', () => { if (!uploadedImage.src || uploadedImage.naturalWidth === 0) return; drawPreviewFrame('colors', frame1_colors); setActiveButton(frame1Btn); });
+        frame3Btn.addEventListener('click', () => { if (!uploadedImage.src || uploadedImage.naturalWidth === 0) return; drawPreviewFrame('colors', frame3_colors); setActiveButton(frame3Btn); });
+        frame2Btn.addEventListener('click', () => { if (!uploadedImage.src || uploadedImage.naturalWidth === 0) return; if (!isFrameImageLoaded) { alert("Çerçeve resmi hala yükleniyor."); return; } drawPreviewFrame('image'); setActiveButton(frame2Btn); });
+        frame4Btn.addEventListener('click', () => { if (!uploadedImage.src || uploadedImage.naturalWidth === 0) return; if (!isFrame4ImageLoaded) { alert("Çerçeve resmi hala yükleniyor."); return; } drawPreviewFrame('image4'); setActiveButton(frame4Btn); });
+        frame5Btn.addEventListener('click', () => { if (!uploadedImage.src || uploadedImage.naturalWidth === 0) return; if (!isFrame5ImageLoaded) { alert("Çerçeve resmi hala yükleniyor."); return; } drawPreviewFrame('image5'); setActiveButton(frame5Btn); });
+        frame6Btn.addEventListener('click', () => { if (!uploadedImage.src || uploadedImage.naturalWidth === 0) return; if (!isFrame6ImageLoaded) { alert("Çerçeve resmi hala yükleniyor."); return; } drawPreviewFrame('image6'); setActiveButton(frame6Btn); });
+        frame7Btn.addEventListener('click', () => { if (!uploadedImage.src || uploadedImage.naturalWidth === 0) return; if (!isFrame7ImageLoaded) { alert("Çerçeve resmi hala yükleniyor."); return; } drawPreviewFrame('image7'); setActiveButton(frame7Btn); });
 
-        // --- Drag/Pan Event Listeners ---
-        previewDiv.addEventListener('mousedown', dragStart);
-        previewDiv.addEventListener('touchstart', dragStart, { passive: false });
-        previewDiv.addEventListener('mousemove', dragMove);
-        previewDiv.addEventListener('touchmove', dragMove, { passive: false });
-        previewDiv.addEventListener('mouseup', dragEnd);
-        previewDiv.addEventListener('touchend', dragEnd);
+        previewDiv.addEventListener('mousedown', dragStart); previewDiv.addEventListener('touchstart', dragStart, { passive: false });
+        previewDiv.addEventListener('mousemove', dragMove); previewDiv.addEventListener('touchmove', dragMove, { passive: false });
+        previewDiv.addEventListener('mouseup', dragEnd); previewDiv.addEventListener('touchend', dragEnd);
         previewDiv.addEventListener('mouseleave', dragEnd);
+        function dragStart(e) { if (!uploadedImage.src || uploadedImage.naturalWidth === 0) return; e.preventDefault(); isDragging = true; previewDiv.classList.add('dragging'); startX = e.type === 'touchstart' ? e.touches[0].clientX : e.clientX; startY = e.type === 'touchstart' ? e.touches[0].clientY : e.clientY; }
+        function dragMove(e) { if (!isDragging) return; e.preventDefault(); currentX = e.type === 'touchmove' ? e.touches[0].clientX : e.clientX; currentY = e.type === 'touchmove' ? e.touches[0].clientY : e.clientY; let deltaX = currentX - startX; let deltaY = currentY - startY; let newOffsetX = offsetX + deltaX; let newOffsetY = offsetY + deltaY; offsetX = newOffsetX; offsetY = newOffsetY; startX = currentX; startY = currentY; requestAnimationFrame(drawUserImage); }
+        function dragEnd(e) { if (!isDragging) return; isDragging = false; previewDiv.classList.remove('dragging'); }
 
-        function dragStart(e) {
-            if (!uploadedImage.src || uploadedImage.src.endsWith('#')) return;
-            e.preventDefault();
-            isDragging = true;
-            previewDiv.classList.add('dragging');
-            startX = e.type === 'touchstart' ? e.touches[0].clientX : e.clientX;
-            startY = e.type === 'touchstart' ? e.touches[0].clientY : e.clientY;
-            // console.log("Drag Start:", startX, startY);
-        }
-
-        function dragMove(e) {
-            if (!isDragging) return;
-            e.preventDefault();
-            currentX = e.type === 'touchmove' ? e.touches[0].clientX : e.clientX;
-            currentY = e.type === 'touchmove' ? e.touches[0].clientY : e.clientY;
-            let deltaX = currentX - startX;
-            let deltaY = currentY - startY;
-            let newOffsetX = offsetX + deltaX;
-            let newOffsetY = offsetY + deltaY;
-
-            // Boundary Check
-            newOffsetX = Math.min(0, Math.max(size - scaledWidth, newOffsetX));
-            newOffsetY = Math.min(0, Math.max(size - scaledHeight, newOffsetY));
-
-            offsetX = newOffsetX;
-            offsetY = newOffsetY;
-            startX = currentX;
-            startY = currentY;
-            requestAnimationFrame(drawUserImage);
-        }
-
-        function dragEnd(e) {
-            if (!isDragging) return;
-            isDragging = false;
-            previewDiv.classList.remove('dragging');
-            // console.log("Drag End. Final offset:", offsetX.toFixed(1), offsetY.toFixed(1));
-        }
-
-        // --- Download Function ---
-        // UPDATED: Added 'image4' case
+        // --- Profil Fotoğrafı Oluşturucu İndirme Fonksiyonu ---
         function downloadImage() {
-            if (!uploadedImage.src || uploadedImage.src.endsWith('#')) { alert("Lütfen önce bir fotoğraf yükleyin."); return; }
+            if (!uploadedImage.src || uploadedImage.naturalWidth === 0) { alert("Lütfen önce bir fotoğraf yükleyin."); return; }
             if (activeFrameType === 'none') { alert("Lütfen indirmeden önce bir çerçeve seçin."); return; }
-            // Specific checks for image frames needing to be loaded
-            if (activeFrameType === 'image' && !isFrameImageLoaded) { alert("Çerçeve resmi (Rize Rizesporludur) yüklenemedi veya hala yükleniyor."); return; }
-            if (activeFrameType === 'image4' && !isFrame4ImageLoaded) { alert("Yeni çerçeve resmi yüklenemedi veya hala yükleniyor."); return; }
+            if (activeFrameType === 'image' && !isFrameImageLoaded) { alert("Çerçeve resmi (Rize Rizesporludur) yüklenemedi."); return; }
+            if (activeFrameType === 'image4' && !isFrame4ImageLoaded) { alert("Çerçeve resmi (Atmacalar) yüklenemedi."); return; }
+            if (activeFrameType === 'image5' && !isFrame5ImageLoaded) { alert("Çerçeve resmi (Bir Şarkısın Sen) yüklenemedi."); return; }
+            if (activeFrameType === 'image6' && !isFrame6ImageLoaded) { alert("Çerçeve resmi (Biz Rizesporluyuz) yüklenemedi."); return; }
+            if (activeFrameType === 'image7' && !isFrame7ImageLoaded) { alert("Çerçeve resmi (Ç. Rizespor Logo) yüklenemedi."); return; }
 
-
-            const canvas = document.createElement('canvas');
-            const ctx = canvas.getContext('2d');
+            const canvas = document.createElement('canvas'); const ctx = canvas.getContext('2d');
             canvas.width = size; canvas.height = size;
+            ctx.drawImage(imageCanvas, 0, 0, size, size); // Kullanıcı resmini çiz
 
-            // 1. Draw the panned user image from the imageCanvas
-            ctx.drawImage(imageCanvas, 0, 0, size, size);
-
-            // 2. Draw the selected frame OVER the image
+            // Seçili çerçeveyi çiz
             if (activeFrameType === 'colors') {
-                if (!activeColorFrameData || activeColorFrameData.length !== 2) { console.error("Download Error: Color data invalid."); alert("Hata: Renk verisi eksik."); return; }
+                if (!activeColorFrameData || activeColorFrameData.length !== 2) return;
                 const colorA = activeColorFrameData[0]; const colorB = activeColorFrameData[1]; const halfWidth = colorFrameWidth / 2;
                 ctx.beginPath(); ctx.arc(size / 2, size / 2, size / 2 - halfWidth, Math.PI / 2, -Math.PI / 2, true); ctx.strokeStyle = colorA; ctx.lineWidth = colorFrameWidth; ctx.stroke();
                 ctx.beginPath(); ctx.arc(size / 2, size / 2, size / 2 - halfWidth, -Math.PI / 2, Math.PI / 2, true); ctx.strokeStyle = colorB; ctx.lineWidth = colorFrameWidth; ctx.stroke();
-            } else if (activeFrameType === 'image') { // Frame 2
-                // Safety check already done above
-                ctx.drawImage(frameImage, 0, 0, size, size);
-            } else if (activeFrameType === 'image4') { // NEW: Frame 4
-                // Safety check already done above
-                 ctx.drawImage(frame4Image, 0, 0, size, size);
-            }
+            } else if (activeFrameType === 'image') { ctx.drawImage(frameImage, 0, 0, size, size); }
+            else if (activeFrameType === 'image4') { ctx.drawImage(frame4Image, 0, 0, size, size); }
+            else if (activeFrameType === 'image5') { ctx.drawImage(frame5Image, 0, 0, size, size); }
+            else if (activeFrameType === 'image6') { ctx.drawImage(frame6Image, 0, 0, size, size); }
+            else if (activeFrameType === 'image7') { ctx.drawImage(frame7Image, 0, 0, size, size); }
 
-            // Trigger download link
-            const link = document.createElement('a');
-            link.download = 'her-sey-rizespor-icin.png';
+            // İndirme linkini oluştur ve tıkla
+            const link = document.createElement('a'); link.download = 'her-sey-rizespor-icin.png';
             link.href = canvas.toDataURL('image/png', 1.0);
-            link.click();
+            document.body.appendChild(link); link.click(); document.body.removeChild(link);
         }
 
-        // --- Utility Function ---
+        // --- Profil Fotoğrafı Oluşturucu UI Sıfırlama ---
         function resetUI() {
             previewDiv.style.display = 'none'; frameSelectionDiv.style.display = 'none'; downloadBtn.style.display = 'none';
-            uploadedImage = new Image();
+            uploadedImage = new Image(); // Image nesnesini sıfırla
             imageCtx.clearRect(0, 0, size, size);
             frameCtx.clearRect(0, 0, size, size);
-            activeFrameType = 'none'; activeColorFrameData = null; setActiveButton(null); // This now handles all buttons
+            activeFrameType = 'none'; activeColorFrameData = null; setActiveButton(null);
             offsetX = 0; offsetY = 0; imageScale = 1; scaledWidth = 0; scaledHeight = 0; isDragging = false;
-            previewDiv.classList.remove('dragging');
-            if (fileInput) fileInput.value = '';
+            initialOffsetX = 0; initialOffsetY = 0; previewDiv.classList.remove('dragging');
+            if (fileInput) fileInput.value = ''; // Dosya inputunu temizle
         }
-        resetUI(); // Initial setup
+
+
+        // <<< MAÇ GERİ SAYIM SCRİPT BAŞLANGIÇ >>>
+
+        // --- Ayarlar ---
+        const homeTeamLogoUrl = 'https://i.ibb.co/S71kmpvH/rizelogopng.png'; // Rizespor Logo URL'si (DEĞİŞTİRİN!)
+        const awayTeamLogoUrl = 'https://i.ibb.co/SwfB9mmw/20220809170232-Konyaspor-1922.png'; // Sivasspor Logo URL'si (DEĞİŞTİRİN!)
+        // ÖNEMLİ: Maç tarihini ve saatini YYYY-MM-DDTHH:mm:ss formatında girin
+        const matchDateTimeString = '2025-05-10T16:00:00'; // (DEĞİŞTİRİN!)
+
+        // --- Element Referansları (Geri Sayım) ---
+        const homeLogoElement = document.getElementById('home-logo');
+        const awayLogoElement = document.getElementById('away-logo');
+        const matchDateTimeElement = document.getElementById('match-date-time');
+        const daysElement = document.getElementById('days');
+        const hoursElement = document.getElementById('hours');
+        const minutesElement = document.getElementById('minutes');
+        const secondsElement = document.getElementById('seconds');
+        const countdownTimerElement = document.getElementById('countdown-timer');
+        const matchPassedMessageElement = document.getElementById('match-passed-message');
+
+        // --- Logoları ve Tarihi Ayarla (Geri Sayım) ---
+        if (homeLogoElement) homeLogoElement.src = homeTeamLogoUrl;
+        if (awayLogoElement) awayLogoElement.src = awayTeamLogoUrl;
+
+        const matchDate = new Date(matchDateTimeString);
+
+        if (matchDateTimeElement && !isNaN(matchDate)) {
+             const options = { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' };
+             matchDateTimeElement.textContent = `Tarih: ${matchDate.toLocaleDateString('tr-TR', options)}`;
+        } else if (matchDateTimeElement) {
+            matchDateTimeElement.textContent = "Maç tarihi belirlenmedi.";
+             console.error("Geçersiz maç tarihi formatı!");
+             if(countdownTimerElement) countdownTimerElement.style.display = 'none'; // Hatalı tarih ise sayacı gizle
+             if(matchPassedMessageElement) matchPassedMessageElement.style.display = 'none';
+        }
+
+        // --- Geri Sayım Fonksiyonu ---
+        let countdownInterval;
+
+        function updateCountdown() {
+            const now = new Date().getTime();
+            // matchDate geçerli bir tarih değilse getTime() hata verir.
+            if (isNaN(matchDate)) {
+                clearInterval(countdownInterval);
+                return;
+            }
+            const distance = matchDate.getTime() - now;
+
+            if (distance < 0) {
+                clearInterval(countdownInterval);
+                if (countdownTimerElement) countdownTimerElement.style.display = 'none';
+                if (matchPassedMessageElement) {
+                    matchPassedMessageElement.textContent = 'Maç Başladı veya Oynandı!';
+                    matchPassedMessageElement.style.display = 'block';
+                }
+                return;
+            }
+
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            const formatTime = (time) => (time < 10 ? `0${time}` : time);
+
+            if (daysElement) daysElement.textContent = formatTime(days);
+            if (hoursElement) hoursElement.textContent = formatTime(hours);
+            if (minutesElement) minutesElement.textContent = formatTime(minutes);
+            if (secondsElement) secondsElement.textContent = formatTime(seconds);
+        }
+
+        // Geri sayımı başlat (sadece geçerli ve gelecek bir tarih varsa)
+        if (!isNaN(matchDate) && matchDate.getTime() > new Date().getTime()) {
+             if (countdownTimerElement) countdownTimerElement.style.display = 'flex';
+             if (matchPassedMessageElement) matchPassedMessageElement.style.display = 'none';
+             countdownInterval = setInterval(updateCountdown, 1000);
+             updateCountdown(); // İlk gösterim
+        } else if (!isNaN(matchDate)) { // Geçerli ama geçmiş bir tarih ise
+            if (countdownTimerElement) countdownTimerElement.style.display = 'none';
+            if (matchPassedMessageElement) {
+                 matchPassedMessageElement.textContent = 'Maç Oynandı!';
+                 matchPassedMessageElement.style.display = 'block';
+            }
+        }
+        // Eğer matchDate geçersizse zaten yukarıda gizlendi.
+
+        // <<< MAÇ GERİ SAYIM SCRİPT BİTİŞ >>>
+
+        // En sonda ana uygulamanın UI'ını sıfırla
+        resetUI();
 
     </script>
 </body>
